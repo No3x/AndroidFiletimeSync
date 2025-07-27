@@ -46,3 +46,18 @@ The app will scan all storage/emulated/0 files. It will exclude Android/data fil
 - **Jetpack Compose**: Modern UI toolkit for Android.
 - **Kotlin Serialization**: For encoding and decoding JSON data.
 - **Android FileProvider**: For secure file sharing.
+
+## Images
+
+## Old phone
+![Description](docs/images/3.jpg)
+![Description](docs/images/4.jpg)
+![Description](docs/images/5.jpg)
+![Description](docs/images/6.jpg)
+![Description](docs/images/7.jpg)
+![Description](docs/images/8.jpg)
+
+# New phone
+![Description](docs/images/9.jpg)
+![Description](docs/images/10.jpg)
+![Description](docs/images/11.jpg)
