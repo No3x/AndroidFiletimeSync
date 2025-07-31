@@ -2,8 +2,7 @@ name: Generated APK AAB (Upload - Create Artifact To Github Action)
 
 env:
   # The name of the main module repository
-  main_project_module: app
-
+  main_project_module: composeApp
   playstore_name: AndroidFiletimeSync
 on:
 
@@ -36,7 +35,11 @@ jobs:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '17'
           cache: 'gradle'
-
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          dependency-graph: generate-and-submit
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
