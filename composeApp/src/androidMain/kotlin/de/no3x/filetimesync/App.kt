@@ -2,10 +2,8 @@ package de.no3x.filetimesync
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -71,8 +69,8 @@ fun App() {
 
 
                 AppScreen.DOWNLOAD_AND_PROCESS_JSON -> {
-                    DownloadAndProcessJsonScreen { timestamps ->
-                        val updated = updateTimestamps(timestamps)
+                    DownloadAndProcessJsonScreen { dir, timestamps ->
+                        val updated = updateTimestamps(dir, timestamps)
                         lastProcessedCount = updated
                         screen = AppScreen.SUMMARY
                     }
@@ -92,12 +90,11 @@ enum class AppScreen {
     MAIN, GENERATE_JSON, SHARE_JSON, DOWNLOAD_AND_PROCESS_JSON, SUMMARY
 }
 
-fun updateTimestamps(timestamps: List<FileTimestamp>): Int {
+fun updateTimestamps(dir: File, timestamps: List<FileTimestamp>): Int {
     // Try to update file timestamps, return the number of files updated.
     var updated = 0
-    val root = File("/storage/emulated/0") // Or SD card root if needed
     timestamps.forEach { ft ->
-        val file = File(root, ft.path)
+        val file = File(dir, ft.path)
         if (file.exists()) {
             file.setLastModified(ft.timestamp)
             updated++
