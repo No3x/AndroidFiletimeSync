@@ -45,11 +45,11 @@ jobs:
         run: ./gradlew test
 
       - name: Build unsigned APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleDebug
 
       - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: composeApp/build/outputs/apk/release/composeApp-release-unsigned.apk
+          files: composeApp/build/outputs/apk/debug/composeApp-debug-unsigned.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
