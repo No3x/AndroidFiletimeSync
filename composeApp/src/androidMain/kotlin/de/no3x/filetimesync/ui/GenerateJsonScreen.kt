@@ -28,10 +28,20 @@ fun GenerateJsonScreen(onExported: (Uri?) -> Unit) {
     var status by remember { mutableStateOf("") }
     var exporting by remember { mutableStateOf(false) }
     var progress by remember { mutableStateOf(0f) }
+    var selectedDir by remember { mutableStateOf<File?>(null) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.padding(16.dp)) {
+        StorageDropdown(
+            selectedDir = selectedDir,
+            onDirSelected = { selectedDir = it }
+        )
+        selectedDir?.let {
+            Spacer(Modifier.height(8.dp))
+            Text(it.absolutePath)
+            Spacer(Modifier.height(16.dp))
+        }
         Button(
             onClick = {
                 if (!exporting) {
@@ -39,7 +49,7 @@ fun GenerateJsonScreen(onExported: (Uri?) -> Unit) {
                         exporting = true
                         progress = 0f
                         status = "Scanning files..."
-                        val sdCard = File("/storage/emulated/0")
+                        val sdCard = selectedDir ?: File("/storage/emulated/0")
                         if (!sdCard.exists() || !sdCard.isDirectory) {
                             status = "SD card not found!"
                             exporting = false
@@ -102,7 +112,7 @@ fun GenerateJsonScreen(onExported: (Uri?) -> Unit) {
             },
             enabled = !exporting
         ) {
-            Text("Export all SD card file timestamps")
+            Text("Export file timestamps")
         }
         if (exporting) {
             Spacer(Modifier.height(16.dp))

@@ -1,11 +1,12 @@
 This is a Kotlin Multiplatform app designed to help users synchronize file timestamps between devices. The app primarily targets Android and uses Jetpack Compose for its user interface. 
 
-The app will scan all storage/emulated/0 files. It will exclude Android/data files except WhatsApp media.
+By default the app scans all files under `/storage/emulated/0`. It will exclude Android/data files except WhatsApp media. You can now choose a different directory before exporting.
 
 ## Features
 
 1. **Export File Timestamps**:
-- Scans the SD card or internal storage for files.
+- Allows choosing a directory to scan.
+- Scans the selected directory (default is the SD card) for files.
 - Collects file paths and their last modified timestamps.
 - Exports the data as a JSON file to the device's Downloads folder.
 
