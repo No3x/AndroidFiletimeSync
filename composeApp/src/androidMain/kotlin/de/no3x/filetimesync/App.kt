@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import de.no3x.filetimesync.domain.FileTimestamp
 import de.no3x.filetimesync.ui.GenerateJsonScreen
@@ -39,7 +40,7 @@ fun App() {
 
             var screen by remember { mutableStateOf(AppScreen.MAIN) }
             var exportedJsonUri by remember { mutableStateOf<Uri?>(null) }
-            var lastProcessedCount by remember { mutableStateOf(0) }
+            var lastProcessedFiles by remember { mutableStateOf<List<FileTimestamp>>(emptyList()) }
 
             when (screen) {
                 AppScreen.MAIN -> {
@@ -70,16 +71,29 @@ fun App() {
 
                 AppScreen.DOWNLOAD_AND_PROCESS_JSON -> {
                     DownloadAndProcessJsonScreen { dir, timestamps ->
-                        val updated = updateTimestamps(dir, timestamps)
-                        lastProcessedCount = updated
+                        val updatedFiles = updateTimestamps(dir, timestamps)
+                        lastProcessedFiles = updatedFiles
                         screen = AppScreen.SUMMARY
                     }
                     Button(onClick = { screen = AppScreen.MAIN }) { Text("Back") }
                 }
 
                 AppScreen.SUMMARY -> {
-                    Text("Updated timestamps for $lastProcessedCount files!")
-                    Button(onClick = { screen = AppScreen.MAIN }) { Text("Back to Main") }
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Updated timestamps for ${lastProcessedFiles.size} files!")
+                        Spacer(Modifier.height(8.dp))
+                        androidx.compose.foundation.lazy.LazyColumn(
+                            modifier = Modifier
+                                .weight(1f) // Take up remaining space
+                                .fillMaxWidth()
+                        ) {
+                            items(lastProcessedFiles.size) { index ->
+                                Text("• ${lastProcessedFiles[index].path}")
+                            }
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        Button(onClick = { screen = AppScreen.MAIN }) { Text("Back to Main") }
+                    }
                 }
             }
         }
@@ -90,15 +104,14 @@ enum class AppScreen {
     MAIN, GENERATE_JSON, SHARE_JSON, DOWNLOAD_AND_PROCESS_JSON, SUMMARY
 }
 
-fun updateTimestamps(dir: File, timestamps: List<FileTimestamp>): Int {
-    // Try to update file timestamps, return the number of files updated.
-    var updated = 0
+fun updateTimestamps(dir: File, timestamps: List<FileTimestamp>): List<FileTimestamp> {
+    val updated : MutableList<FileTimestamp> = mutableListOf()
     timestamps.forEach { ft ->
         val file = File(dir, ft.path)
         if (file.exists()) {
             file.setLastModified(ft.timestamp)
-            updated++
+            updated.add(ft)
         }
     }
-    return updated
+    return updated.toList()
 }

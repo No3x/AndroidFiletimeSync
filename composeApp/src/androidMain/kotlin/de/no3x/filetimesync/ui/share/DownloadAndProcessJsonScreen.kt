@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import de.no3x.filetimesync.domain.FileTimestamp
+import de.no3x.filetimesync.ui.AnimatedGlowingProgressBar
 import de.no3x.filetimesync.ui.StorageDropdown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -132,32 +133,5 @@ fun DownloadAndProcessJsonScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun AnimatedGlowingProgressBar(progress: Float) {
-    val glowColors = listOf(Color(0xFF38BDF8), Color(0xFF34D399))
-    val brush = Brush.horizontalGradient(colors = glowColors)
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-            .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(5.dp))
-            .padding(vertical = 2.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(fraction = progress)
-                .height(10.dp)
-                .blur(20.dp)
-                .background(brush, RoundedCornerShape(5.dp))
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(fraction = progress)
-                .height(10.dp)
-                .background(brush, RoundedCornerShape(5.dp))
-        )
     }
 }

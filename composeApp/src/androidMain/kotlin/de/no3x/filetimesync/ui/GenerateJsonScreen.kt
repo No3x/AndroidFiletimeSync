@@ -116,8 +116,8 @@ fun GenerateJsonScreen(onExported: (Uri?) -> Unit) {
         }
         if (exporting) {
             Spacer(Modifier.height(16.dp))
-            LinearProgressIndicator(
-                progress = { progress },
+            AnimatedGlowingProgressBar(
+                progress = progress,
             )
         }
         Spacer(Modifier.height(16.dp))
