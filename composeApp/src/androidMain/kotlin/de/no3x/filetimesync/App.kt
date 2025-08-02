@@ -5,8 +5,11 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -79,20 +82,60 @@ fun App() {
                 }
 
                 AppScreen.SUMMARY -> {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxSize()
+                    ) {
+                        var searchQuery by remember { mutableStateOf("") }
+
                         Text("Updated timestamps for ${lastProcessedFiles.size} files!")
                         Spacer(Modifier.height(8.dp))
-                        androidx.compose.foundation.lazy.LazyColumn(
+
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            label = { Text("Search...") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+
+                        val treeEntries = lastProcessedFiles
+                            .map { File(it.path) }
+                            .filter { file ->
+                                searchQuery.isBlank() ||
+                                        file.name.contains(searchQuery, ignoreCase = true) ||
+                                        file.parent?.contains(searchQuery, ignoreCase = true) == true
+                            }
+                            .groupBy { it.parent ?: "/" }
+                            .toSortedMap()
+                            .flatMap { (dir, files) ->
+                                val dirEntry = TreeEntry(label = "📁 $dir", indent = 0)
+                                val fileEntries = files.sortedBy { it.name }.map {
+                                    TreeEntry(label = "└ ${it.name}", indent = 1)
+                                }
+                                listOf(dirEntry) + fileEntries
+                            }
+
+                        LazyColumn(
                             modifier = Modifier
-                                .weight(1f) // Take up remaining space
+                                .weight(1f)
                                 .fillMaxWidth()
                         ) {
-                            items(lastProcessedFiles.size) { index ->
-                                Text("• ${lastProcessedFiles[index].path}")
+                            items(treeEntries) { entry ->
+                                Text(
+                                    text = entry.label,
+                                    modifier = Modifier.padding(start = (entry.indent * 16).dp, bottom = 4.dp)
+                                )
                             }
                         }
+
                         Spacer(Modifier.height(16.dp))
-                        Button(onClick = { screen = AppScreen.MAIN }) { Text("Back to Main") }
+
+                        Button(onClick = { screen = AppScreen.MAIN }) {
+                            Text("Back to Main")
+                        }
                     }
                 }
             }
@@ -103,6 +146,8 @@ fun App() {
 enum class AppScreen {
     MAIN, GENERATE_JSON, SHARE_JSON, DOWNLOAD_AND_PROCESS_JSON, SUMMARY
 }
+
+data class TreeEntry(val label: String, val indent: Int)
 
 fun updateTimestamps(dir: File, timestamps: List<FileTimestamp>): List<FileTimestamp> {
     val updated : MutableList<FileTimestamp> = mutableListOf()
