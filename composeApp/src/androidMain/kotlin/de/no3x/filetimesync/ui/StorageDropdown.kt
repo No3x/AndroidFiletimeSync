@@ -1,5 +1,6 @@
 package de.no3x.filetimesync.ui
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -42,7 +43,7 @@ fun StorageDropdown(
             readOnly = true,
             label = { Text("Select Storage") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier.fillMaxWidth()
         )
         DropdownMenu(
             expanded = expanded,
