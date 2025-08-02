@@ -8,6 +8,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,15 @@ fun StorageDropdown(
     }
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf(selectedDir ?: storageDirs.firstOrNull()) }
+
+    // Automatically select default directory if none selected yet
+    LaunchedEffect(storageDirs) {
+        if (selectedDir == null && storageDirs.isNotEmpty()) {
+            val defaultDir = storageDirs.first()
+            selected = defaultDir
+            onDirSelected(defaultDir)
+        }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
